@@ -1,7 +1,7 @@
 # Iona Design Document
 
 Iona version 0.1
-Document version 2
+Document version 3
 
 ## Abstract
 
@@ -66,6 +66,14 @@ An example seed file:
 
 ~~~ json
 {
+    "expressions": {
+        "hug": {
+            "affection": 1,
+        },
+        "kiss": {
+            "affection": 2,
+        },
+    },
     "emotion_model": {
         "affection": {
             "happiness": 1,
@@ -73,12 +81,15 @@ An example seed file:
             "loneliness": -1,
         },
     },
-    "emotion_decay": [],
+    "emotion_decay": [
+        "loneliness": 1,
+        "happiness": -1,
+    ],
     "responses": [
         [
             [">", "love", 3],
             [
-                "daisuki",
+                ["say", "daisuki"],
             ],
         ],
     ],
@@ -92,25 +103,32 @@ Python's pickle module or using JSON.
 
 ## Personality
 
-Iona's personality will be instantiated by two systems: the emotion
-model and hard coded responses.
+Iona's personality will be instantiated by three systems: expressive
+perception, the emotion model and hard coded responses.
+
+### Expressive Perception
+
+Expressive perception dictates how Iona perceives the expression
+attributes of affective actions.  These are static and defined by the
+seed file.  Any string can be used as an expression attribute, but a
+list of suggested attributes is provided below.
 
 ### Emotion Model
 
 The emotion model describes how Iona's emotions change.  Affective
-actions will have various levels of expression attributes, representing
-how Iona interprets the actions.  These will impact Iona's emotional
-state.  Iona's emotional state will also vary over time without
-affective input.
+actions will have various levels of expression attributes as determined
+by expressive perception, representing how Iona interprets the actions.
+These will impact Iona's emotional state.  Iona's emotional state will
+also vary over time without affective input.
 
-#### List of Expression Attributes
+#### List of Suggested Expression Attributes
 
 * Affection/Love
 * Attention
 * Dislike/Hate
 * Apathy (no action)
 
-#### List of Emotions
+#### List of Suggested Emotions
 
 * Happiness
     * Sadness
@@ -130,12 +148,13 @@ based on emotional state and the triggering action.  These will be
 represented using a set of rules described in the personality seed data
 file.
 
-## TODO
-
-* Add hard-coded responses rules information.
+When Iona is looking for a response, the rules will be checked in order,
+and the first satisfying rule will be used.  A random response in the
+set for that rule will be picked.
 
 ## Future Goals
 
+* Use trained neural network for the emotion model
 * Environment observation (e.g., see facial expression)
 * Agency
 * Language processing
